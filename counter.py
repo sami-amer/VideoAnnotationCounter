@@ -86,6 +86,10 @@ def import_paths_from_txt(txt):
 
 def association_counter(a,b):
     counterDic ={
+        'zero' : 0,
+        'one' : 0,
+        'two' : 0,
+        'three' : 0,
         'zeroone' : 0,
         'zerotwo' : 0,
         'zerothree' : 0,
@@ -104,6 +108,7 @@ def association_counter(a,b):
     }
     for elemA, elemB in zip(a,b):
             if elemA == 0:
+                counterDic['zero'] += 1
                 if elemB == 1:
                     counterDic['zeroone'] += 1 
                 elif elemB == 2:
@@ -111,8 +116,10 @@ def association_counter(a,b):
                 elif elemB == 3:
                     counterDic['zerothree'] += 1
                 elif elemB == 0:
-                    print('empty segment, skipping...')
+                    # print('empty segment, skipping...')
+                    continue
             elif elemA == 1:
+                counterDic['one'] += 1
                 if elemB == 1:
                     counterDic['oneone'] += 1 
                 elif elemB == 2:
@@ -122,6 +129,7 @@ def association_counter(a,b):
                 elif elemB == 0:
                     counterDic['onezero'] += 1
             elif elemA == 2:
+                counterDic['two'] += 1
                 if elemB == 1:
                     counterDic['twoone'] += 1 
                 elif elemB == 2:
@@ -131,6 +139,7 @@ def association_counter(a,b):
                 elif elemB == 0:
                     counterDic['twozero'] += 1
             elif elemA == 3:
+                counterDic['three'] += 1
                 if elemB == 1:
                     counterDic['threeone'] += 1 
                 elif elemB == 2:
@@ -146,5 +155,5 @@ if __name__ == "__main__":
     print(len(paths))
     b,a,e = import_multiple(paths)
     print(len(b),len(a),len(e))
-    print(association_counter(a,b))
+    print(association_counter(e,a))
     
