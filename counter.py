@@ -76,49 +76,75 @@ def import_multiple(files):
         e.extend(e1)
     return b,a,e
 
-if __name__ == "__main__":
+def import_paths_from_txt(txt):
+    out = []
+    with open(txt,'r') as file:
+        for line in file:
+            line = line.strip("\n")
+            out.append(line)
+    return out
+
+def association_counter(a,b):
     counterDic ={
+        'zeroone' : 0,
+        'zerotwo' : 0,
+        'zerothree' : 0,
+        'onezero': 0,
         'oneone' : 0,
         'onetwo' : 0,
         'onethree' : 0,
+        'twozero' : 0,
         'twoone' : 0,
         'twotwo' : 0,
         'twothree': 0,
+        'threezero':0,
         'threeone': 0,
         'threetwo' : 0,
         'threethree': 0
     }
-    b,a,e = import_data('ExtractedP01_S04_Emily.txt')
-    print(len(b),len(a),len(e))
-    oneonecounter = 0
     for elemA, elemB in zip(a,b):
-        if elemA == 0:
-            print('no association, continue')
-        elif elemA == 1:
-            if elemB == 1:
-                counterDic['oneone'] += 1 
-            elif elemB == 2:
-                counterDic['onetwo'] += 1
-            elif elemB == 3:
-                counterDic['onethree'] += 1
-            elif elemB == 0:
-                print('no association, continue')
-        elif elemA == 2:
-            if elemB == 1:
-                counterDic['twoone'] += 1 
-            elif elemB == 2:
-                counterDic['twotwo'] += 1
-            elif elemB == 3:
-                counterDic['twothree'] += 1
-            elif elemB == 0:
-                print('no association, continue')
-        elif elemA == 3:
-            if elemB == 1:
-                counterDic['threeone'] += 1 
-            elif elemB == 2:
-                counterDic['threetwo'] += 1
-            elif elemB == 3:
-                counterDic['threethree'] += 1
-            elif elemB == 0:
-                print('no association, continue')
-    print(counterDic)
+            if elemA == 0:
+                if elemB == 1:
+                    counterDic['zeroone'] += 1 
+                elif elemB == 2:
+                    counterDic['zerotwo'] += 1
+                elif elemB == 3:
+                    counterDic['zerothree'] += 1
+                elif elemB == 0:
+                    print('empty segment, skipping...')
+            elif elemA == 1:
+                if elemB == 1:
+                    counterDic['oneone'] += 1 
+                elif elemB == 2:
+                    counterDic['onetwo'] += 1
+                elif elemB == 3:
+                    counterDic['onethree'] += 1
+                elif elemB == 0:
+                    counterDic['onezero'] += 1
+            elif elemA == 2:
+                if elemB == 1:
+                    counterDic['twoone'] += 1 
+                elif elemB == 2:
+                    counterDic['twotwo'] += 1
+                elif elemB == 3:
+                    counterDic['twothree'] += 1
+                elif elemB == 0:
+                    counterDic['twozero'] += 1
+            elif elemA == 3:
+                if elemB == 1:
+                    counterDic['threeone'] += 1 
+                elif elemB == 2:
+                    counterDic['threetwo'] += 1
+                elif elemB == 3:
+                    counterDic['threethree'] += 1
+                elif elemB == 0:
+                    counterDic['threezero'] +=1
+    return counterDic
+if __name__ == "__main__":
+
+    paths = import_paths_from_txt(r'F:\Work\DataCounter\paths.txt')
+    print(len(paths))
+    b,a,e = import_multiple(paths)
+    print(len(b),len(a),len(e))
+    print(association_counter(a,b))
+    
