@@ -1,0 +1,48 @@
+default		39.055	43.46	4.405	Looking away but registering what Jibo is saying
+default		46.763	60.21	13.447	typing on laptop
+default		64.03	71.104	7.074	not looking but registering what is said
+default		80.513	84.501	3.988	is responsive  but does not want to engage with Jibo
+default		84.868	90.573	5.705	typing on laptop
+default		93.343	100.85	7.507	not looking but thinking
+default		102.552	105.855	3.303	typing on laptop
+default		117.584	125.058	7.474	jibo lags 
+Behavioral_Engagement		0.0	24.507	24.507	on-task
+Behavioral_Engagement		24.507	43.46	18.953	off-tsak
+Behavioral_Engagement		43.476	46.763	3.287	on-task
+Behavioral_Engagement		46.763	60.21	13.447	off-tsak
+Behavioral_Engagement		60.226	64.047	3.821	on-task
+Behavioral_Engagement		64.047	71.121	7.074	off-tsak
+Behavioral_Engagement		71.121	84.601	13.48	on-task
+Behavioral_Engagement		84.617	91.174	6.557	off-tsak
+Behavioral_Engagement		91.174	102.435	11.261	on-task
+Behavioral_Engagement		102.435	109.843	7.408	off-tsak
+Behavioral_Engagement		109.843	125.091	15.248	on-task
+Behavioral_Engagement		125.108	146.646	21.538	off-tsak
+Behavioral_Engagement		146.646	176.226	29.58	on-task
+Behavioral_Engagement		176.226	185.001	8.775	off-tsak
+Emotional_Engagement		0.0	24.457	24.457	Satisfied
+Emotional_Engagement		24.457	71.071	46.614	Bored
+Emotional_Engagement		71.071	84.617	13.546	Satisfied
+Emotional_Engagement		84.634	91.157	6.523	Bored
+Emotional_Engagement		91.157	109.859	18.702	Bored
+Emotional_Engagement		109.859	116.966	7.107	Satisfied
+Emotional_Engagement		116.966	146.646	29.68	Bored
+Emotional_Engagement		146.646	169.052	22.406	Satisfied
+Emotional_Engagement		169.052	185.001	15.949	Bored
+Attention_Engagement		0.0	24.441	24.441	focused
+Attention_Engagement		24.441	39.039	14.598	distarcted
+Attention_Engagement		39.039	43.46	4.421	idle
+Attention_Engagement		43.46	46.73	3.27	focused
+Attention_Engagement		46.73	60.193	13.463	distarcted
+Attention_Engagement		60.193	64.013	3.82	focused
+Attention_Engagement		64.013	71.104	7.091	idle
+Attention_Engagement		71.104	84.601	13.497	focused
+Attention_Engagement		84.617	91.157	6.54	distarcted
+Attention_Engagement		91.157	102.402	11.245	idle
+Attention_Engagement		102.418	109.843	7.425	distarcted
+Attention_Engagement		109.843	117.834	7.991	focused
+Attention_Engagement		117.834	133.383	15.549	idle
+Attention_Engagement		133.383	146.596	13.213	distarcted
+Attention_Engagement		146.596	169.052	22.456	focused
+Attention_Engagement		169.052	176.226	7.174	idle
+Attention_Engagement		176.226	185.001	8.775	distarcted
