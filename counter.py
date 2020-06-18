@@ -149,11 +149,15 @@ def association_counter(a,b):
                 elif elemB == 0:
                     counterDic['threezero'] +=1
     return counterDic
+
 if __name__ == "__main__":
 
     paths = import_paths_from_txt(r'F:\Work\DataCounter\paths.txt')
-    print(len(paths))
+    # print(len(paths))
     b,a,e = import_multiple(paths)
-    print(len(b),len(a),len(e))
-    print(association_counter(e,a))
-    
+    # print(len(b),len(a),len(e))
+    counter = 0
+    for elemB, elemA, elemE in zip(b,a,e):
+        if elemB == 1 and elemE == 1 and elemA == 1:
+            counter +=1
+    print(counter/1000)
