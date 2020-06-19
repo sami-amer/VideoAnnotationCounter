@@ -1,4 +1,8 @@
 import sys
+import pandas as pd
+from collections import Counter
+import pickle
+
 def create_template_list(duration):
     return [0] * int(duration * 1000)
 
@@ -150,14 +154,76 @@ def association_counter(a,b):
                     counterDic['threezero'] +=1
     return counterDic
 
+
+def get_percentages(b,a,e, window):
+    behavior = Counter(b)
+    attention = Counter(a)
+    emotion = Counter(e)
+    percentOnTask = behavior[2] / window
+    percentOffTask = behavior[1] / window
+    percentSatisfied = emotion[3]/ window
+    percentConfused = emotion[2]/ window
+    percentBored = emotion[1]/ window
+    percentFocused = attention[3]/ window
+    percentIdle = attention[2]/ window
+    percentDistracted = attention[1]/ window
+    percentDict = {'on-task':percentOnTask,'off-task':percentOffTask,'satisfied':percentSatisfied,'confused': percentConfused,
+    'bored':percentBored,'focused':percentFocused,'idle':percentIdle,'distracted': percentDistracted}
+    return percentDict
+
+
+def clean_cuts(b,a,e,window):
+    previndex = 0
+    if not(len(b) == len(a) == len(e)):
+        print("Lengths don't match")
+        return None
+    data = {"sequence":[],"on-task": [],"off-task":[],"satisfied":[],"confused":[],"bored": [], "focused": [],"idle":[],"distracted":[]}
+    seq = 0
+    for i in range(len(b) + 1):
+        if i == 0:
+            continue
+        if i % window == 0:
+            seq += 1
+            percentages = get_percentages(b[previndex:i],a[previndex:i],e[previndex:i],window) ## percentages shoudl be a dict
+            previndex = i
+            data["sequence"].append(seq)
+            data['on-task'].append(percentages['on-task'])
+            data['off-task'].append(percentages['off-task'])
+            data['satisfied'].append(percentages['satisfied'])
+            data['confused'].append(percentages['confused'])
+            data['bored'].append(percentages['bored'])
+            data['focused'].append(percentages['focused'])
+            data['distracted'].append(percentages['distracted'])
+            data['idle'].append(percentages['idle'])
+    # print(len(data['bored']),len(data['idle']),len(data['distracted']),len(data['sequence']),len(data['on-task']),len(data['off-task']),len(data['satisfied']),len(data['confused']))
+    df = pd.DataFrame(data)
+    return df
+
 if __name__ == "__main__":
 
-    paths = import_paths_from_txt(r'F:\Work\DataCounter\paths.txt')
+    # paths = import_paths_from_txt('F:\\Work\\DataCounter\\paths.txt')
     # print(len(paths))
-    b,a,e = import_multiple(paths)
+    
+    # b,a,e = import_multiple(paths)
+    # with open('timeSaver\\b.txt','wb') as f: 
+    #     pickle.dump(b,f)
+    # with open('timeSaver\\a.txt','wb') as f: 
+    #     pickle.dump(a,f)
+    # with open('timeSaver\\e.txt','wb') as f: 
+    #     pickle.dump(e,f)
+    with open('timeSaver\\b.txt','rb') as f: 
+        b = pickle.load(f)
+    with open('timeSaver\\a.txt','rb') as f: 
+        a = pickle.load(f)
+    with open('timeSaver\\e.txt','rb') as f: 
+        e = pickle.load(f)
+
+    # print(len(b))
     # print(len(b),len(a),len(e))
-    counter = 0
-    for elemB, elemA, elemE in zip(b,a,e):
-        if elemB == 1 and elemE == 1 and elemA == 1:
-            counter +=1
-    print(counter/1000)
+    # counter = 0
+    # for elemB, elemA, elemE in zip(b,a,e):
+    #     if elemB == 1 and elemE == 1 and elemA == 1:
+    #         counter +=1
+    # print(counter/1000)
+    df = (clean_cuts(b,a,e,1000))
+    print(df.to_csv(index=False))
