@@ -36,41 +36,66 @@ def get_end_time_multiple(file_list):
         e += get_end_time(f)[2]
     return b,a,e
 
-def import_data(file_name):
+def import_data_ms(file_name): # TODO: make this use data frames
     bTime, aTime, eTime = get_end_time(file_name)
     endtime = max([bTime, aTime, eTime])
-    Behavioral_Engagement = create_template_list(endtime)
-    Attention_Engagement = create_template_list(endtime)
-    Emotional_Engagement = create_template_list(endtime)
-    with open(file_name, "r") as f:
-        for line in f:
-            line = line.split("\t")
-            del line[1]
-            line[-1] = line[-1].strip("\n")
-            if line[1] == 'default':
-                continue
-            if line[4] == "off-tsak" or line[4] == "distarcted" or line[4] == "Bored":
-                tag = 1
-            if line[4] == "on-task" or line[4] == "idle" or line[4] == "Confused":
-                tag = 2
-            if line[4] == "Satisfied" or line[4] == "focused":
-                tag = 3
-            if line[4] == 'None':
-                continue
-            start = int(float(line[1]) * 1000) - 1
-            stop = int(float(line[2]) * 1000)
-            if line[0] == "Behavioral_Engagement":
-                for i in range(start, stop):
-                    Behavioral_Engagement[i] = tag
-            elif line[0] == "Attention_Engagement":
-                for i in range(start, stop):
-                    Attention_Engagement[i] = tag
-            elif line[0] == "Emotional_Engagement":
-                for i in range(start, stop):
-                    Emotional_Engagement[i] = tag
-    return Behavioral_Engagement, Attention_Engagement, Emotional_Engagement
+    Behavioral_Engagement = [0] * int(endtime * 1000)
+    Attention_Engagement = [0] * int(endtime * 1000)
+    Emotional_Engagement = [0] * int(endtime * 1000)
+    annotation_data = import_data_durations(file_name)
 
+    labeled = {'behavior':Behavioral_Engagement,'attention':Attention_Engagement, 'emotion': Emotional_Engagement}
+    ms_data = pd.DataFrame.from_dict(labeled)
+    if len(annotation_data['on-task']) > 1:
+        for elem in (annotation_data['on-task']): # way to loop this better
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'behavior'] = 2
     
+    if len(annotation_data['off-tsak']) > 1:
+        for elem in (annotation_data['off-tsak']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'behavior'] = 1
+  
+    if len(annotation_data['distarcted']) > 1:
+        for elem in (annotation_data['distarcted']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'attention'] = 1
+
+    if len(annotation_data['idle']) > 1:
+        for elem in (annotation_data['idle']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'attention'] = 2
+
+    if len(annotation_data['focused']) > 1:
+        for elem in (annotation_data['focused']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'attention'] = 3
+ 
+    if len(annotation_data['Bored']) > 1:
+        for elem in (annotation_data['Bored']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'emotion'] = 1
+
+    if len(annotation_data['Satisfied']) > 1:
+        for elem in (annotation_data['Satisfied']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'emotion'] = 3
+
+    if len(annotation_data['Confused']) > 1:     
+        for elem in (annotation_data['Confused']):
+            start = int(1000 * (elem[0]))
+            stop = int(1000 * (start + elem[1]) + 1)
+            ms_data.loc[start:stop,'emotion'] = 2        
+
+    return ms_data
+
 def import_multiple(files):
     b,a,e = [],[],[]
     for f in files:
@@ -155,36 +180,58 @@ def association_counter(a,b):
     return counterDic
 
 
-def get_percentages(b,a,e, window):
-    behavior = Counter(b)
-    attention = Counter(a)
-    emotion = Counter(e)
-    percentOnTask = behavior[2] / window
-    percentOffTask = behavior[1] / window
-    percentSatisfied = emotion[3]/ window
-    percentConfused = emotion[2]/ window
-    percentBored = emotion[1]/ window
-    percentFocused = attention[3]/ window
-    percentIdle = attention[2]/ window
-    percentDistracted = attention[1]/ window
+def get_percentages(df, window,previndex,i):
+    
+    behaviorCounts = df[previndex:i]['behavior'].value_counts()
+    attentionCounts = df[previndex:i]['attention'].value_counts()
+    emotionCounts = df[previndex:i]['emotion'].value_counts()
+    try:
+        percentOnTask = behaviorCounts[2] / window
+    except:
+        percentOnTask = 0
+    try:
+        percentOffTask = behaviorCounts[1] / window
+    except:
+        percentOffTask = 0
+    try:
+        percentSatisfied = emotionCounts[3]/ window
+    except:
+        percentSatisfied = 0
+    try:
+        percentConfused = emotionCounts[2]/ window
+    except:
+        percentConfused = 0
+    try:
+        percentBored = emotionCounts[1]/ window
+    except:
+        percentBored = 0
+    try:
+        percentFocused = attentionCounts[3]/ window
+    except:
+        percentFocused = 0
+    try:
+        percentIdle = attentionCounts[2]/ window
+    except:
+        percentIdle = 0
+    try:
+        percentDistracted = attentionCounts[1]/ window
+    except:
+        percentDistracted = 0
     percentDict = {'on-task':percentOnTask,'off-task':percentOffTask,'satisfied':percentSatisfied,'confused': percentConfused,
     'bored':percentBored,'focused':percentFocused,'idle':percentIdle,'distracted': percentDistracted}
     return percentDict
 
 
-def clean_cuts(b,a,e,window):
+def clean_cuts(df, window):
     previndex = 0
-    if not(len(b) == len(a) == len(e)):
-        print("Lengths don't match")
-        return None
     data = {"sequence":[],"on-task": [],"off-task":[],"satisfied":[],"confused":[],"bored": [], "focused": [],"idle":[],"distracted":[]}
     seq = 0
-    for i in range(len(b) + 1):
+    for i in range(len(df) + 1):
         if i == 0:
             continue
         if i % window == 0:
             seq += 1
-            percentages = get_percentages(b[previndex:i],a[previndex:i],e[previndex:i],window) ## percentages shoudl be a dict
+            percentages = get_percentages(df, window, previndex, i) ## percentages shoudl be a dict
             previndex = i
             data["sequence"].append(seq)
             data['on-task'].append(percentages['on-task'])
@@ -195,7 +242,6 @@ def clean_cuts(b,a,e,window):
             data['focused'].append(percentages['focused'])
             data['distracted'].append(percentages['distracted'])
             data['idle'].append(percentages['idle'])
-    # print(len(data['bored']),len(data['idle']),len(data['distracted']),len(data['sequence']),len(data['on-task']),len(data['off-task']),len(data['satisfied']),len(data['confused']))
     df = pd.DataFrame(data)
     return df
 
@@ -226,4 +272,4 @@ if __name__ == "__main__":
     #         counter +=1
     # print(counter/1000)
     df = (clean_cuts(b,a,e,1000))
-    print(df.to_csv(index=False))
+    (df.to_csv('sequences.csv',index=False))
